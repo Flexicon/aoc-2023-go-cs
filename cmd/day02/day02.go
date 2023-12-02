@@ -1,9 +1,9 @@
 package main
 
 import (
+	"aoc23/pkg/util"
 	_ "embed"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -18,8 +18,8 @@ var (
 func main() {
 	fmt.Println("AOC Day 02 🎉")
 
-	check(1, part1, TestInput, 8)
-	check(2, part2, TestInput, 2286)
+	util.Check(1, part1, 8, TestInput, Input)
+	util.Check(2, part2, 2286, TestInput, Input)
 }
 
 func part1(lines []string) int {
@@ -88,15 +88,4 @@ func part2(lines []string) int {
 	}
 
 	return sum
-}
-
-func check(part int, fn func([]string) int, testInput string, expected int) {
-	testRes := fn(strings.Split(testInput, "\n"))
-	if testRes != expected {
-		fmt.Printf("Test Part %d -> Expected %d - got %d\n", part, expected, testRes)
-		os.Exit(1)
-	}
-
-	answer := fn(strings.Split(Input, "\n"))
-	fmt.Printf("\nPart %d result: %d\n\n", part, answer)
 }

@@ -1,9 +1,9 @@
 package main
 
 import (
+	"aoc23/pkg/util"
 	_ "embed"
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -21,25 +21,8 @@ var (
 func main() {
 	fmt.Println("AOC Day 01 🎉")
 
-	t1Ans := 142
-	t1Res := part1(readLines(TestInput1))
-	if t1Res != t1Ans {
-		fmt.Printf("Test Part 1 -> Expected %d - got %d\n", t1Ans, t1Res)
-		os.Exit(1)
-	}
-
-	p1Res := part1(readLines(Input))
-	fmt.Printf("\nPart 1 result: %d\n\n", p1Res)
-
-	t2Ans := 281
-	t2Res := part2(readLines(TestInput2))
-	if t2Res != t2Ans {
-		fmt.Printf("Test Part 2 -> Expected %d - got %d\n", t2Ans, t2Res)
-		os.Exit(1)
-	}
-
-	p2Res := part2(readLines(Input))
-	fmt.Printf("\nPart 2 result: %d\n\n", p2Res)
+	util.Check(1, part1, 142, TestInput1, Input)
+	util.Check(2, part2, 281, TestInput2, Input)
 }
 
 func part1(lines []string) int {
@@ -79,8 +62,4 @@ func calculateCalibration(lines []string, handleWords bool) int {
 	}
 
 	return total
-}
-
-func readLines(input string) []string {
-	return strings.Split(input, "\n")
 }
