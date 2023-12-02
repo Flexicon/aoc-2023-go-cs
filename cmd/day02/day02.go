@@ -19,7 +19,7 @@ func main() {
 	fmt.Println("AOC Day 02 🎉")
 
 	check(1, part1, TestInput, 8)
-	check(2, part2, TestInput, 9999)
+	check(2, part2, TestInput, 2286)
 }
 
 func part1(lines []string) int {
@@ -61,7 +61,33 @@ func part1(lines []string) int {
 }
 
 func part2(lines []string) int {
-	return 0
+	sum := 0
+
+	for _, line := range lines {
+		game := strings.Split(strings.Split(line, ": ")[1], "; ")
+		mins := map[string]int{"red": 0, "blue": 0, "green": 0}
+
+		for _, round := range game {
+			sets := strings.Split(round, ", ")
+
+			for _, set := range sets {
+				pair := strings.Split(set, " ")
+				color := pair[1]
+				amnt, err := strconv.Atoi(pair[0])
+				if err != nil {
+					panic(fmt.Sprintf("could not parse '%s' as int", pair[0]))
+				}
+
+				if mins[color] < amnt {
+					mins[color] = amnt
+				}
+			}
+		}
+
+		sum += mins["red"] * mins["blue"] * mins["green"]
+	}
+
+	return sum
 }
 
 func check(part int, fn func([]string) int, testInput string, expected int) {
