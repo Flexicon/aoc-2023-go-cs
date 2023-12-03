@@ -20,7 +20,7 @@ func main() {
 	fmt.Println("AOC Day 03 🎉")
 
 	util.Check(1, part1, 4361, TestInput, Input)
-	util.Check(2, part2, 9999, TestInput, Input)
+	util.Check(2, part2, 467835, TestInput, Input)
 }
 
 func part1(lines []string) int {
@@ -41,7 +41,7 @@ func part1(lines []string) int {
 			cur.WriteRune(c)
 
 			for _, neighbor := range getNeighbors(i, j, lines) {
-				if isSym(neighbor) {
+				if isSym(neighbor.Value) {
 					isPart = true
 					break
 				}
@@ -55,7 +55,65 @@ func part1(lines []string) int {
 }
 
 func part2(lines []string) int {
-	return 0
+	sum := 0
+
+	for i, line := range lines {
+		chars := []rune(line)
+
+		for j, c := range chars {
+			if c != '*' {
+				continue
+			}
+
+			checked := map[string]bool{}
+			neighboringParts := []int{}
+
+			for _, neighbor := range getNeighbors(i, j, lines) {
+				var x, y = neighbor.X, neighbor.Y
+				if checked[fmt.Sprintf("%d,%d", x, y)] {
+					continue
+				}
+
+				if unicode.IsDigit(neighbor.Value) {
+					checked[fmt.Sprintf("%d,%d", x, y)] = true
+					neighborLine := []rune(lines[x])
+					tmp := string(neighbor.Value)
+
+					for z := y - 1; z >= 0; z-- {
+						checked[fmt.Sprintf("%d,%d", x, z)] = true
+						if !unicode.IsDigit(neighborLine[z]) {
+							break
+						}
+						tmp = string(neighborLine[z]) + tmp
+					}
+
+					for z := y + 1; z < len(neighborLine); z++ {
+						checked[fmt.Sprintf("%d,%d", x, z)] = true
+						if !unicode.IsDigit(neighborLine[z]) {
+							break
+						}
+						tmp += string(neighborLine[z])
+					}
+
+					partNum, err := strconv.Atoi(tmp)
+					if err != nil {
+						panic(fmt.Sprintf("invalid part number: %s", tmp))
+					}
+					neighboringParts = append(neighboringParts, partNum)
+				}
+			}
+
+			if len(neighboringParts) > 1 {
+				ratio := 1
+				for _, p := range neighboringParts {
+					ratio *= p
+				}
+				sum += ratio
+			}
+		}
+	}
+
+	return sum
 }
 
 func isSym(r rune) bool {
@@ -74,22 +132,29 @@ func calcPartNumber(pb strings.Builder, isPart bool) int {
 	return partNum
 }
 
-func getNeighbors(i, j int, lines []string) []rune {
-	return []rune{
-		getCell(i-1, j, lines),
-		getCell(i-1, j+1, lines),
-		getCell(i, j+1, lines),
-		getCell(i+1, j+1, lines),
-		getCell(i+1, j, lines),
-		getCell(i+1, j-1, lines),
-		getCell(i, j-1, lines),
-		getCell(i-1, j-1, lines),
+type Neighbor struct {
+	Value rune
+	X     int
+	Y     int
+}
+
+func getNeighbors(i, j int, lines []string) []Neighbor {
+	return []Neighbor{
+		getNeighborCell(i-1, j, lines),
+		getNeighborCell(i-1, j+1, lines),
+		getNeighborCell(i, j+1, lines),
+		getNeighborCell(i+1, j+1, lines),
+		getNeighborCell(i+1, j, lines),
+		getNeighborCell(i+1, j-1, lines),
+		getNeighborCell(i, j-1, lines),
+		getNeighborCell(i-1, j-1, lines),
 	}
 }
 
-func getCell(i, j int, lines []string) rune {
+func getNeighborCell(i, j int, lines []string) Neighbor {
+	value := '.'
 	if i >= 0 && j >= 0 && i < len(lines) && j < len(lines[i]) {
-		return []rune(lines[i])[j]
+		value = []rune(lines[i])[j]
 	}
-	return '.'
+	return Neighbor{value, i, j}
 }
