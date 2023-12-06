@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"fmt"
 	"log"
+	"math"
 	"slices"
 	"strconv"
 	"strings"
@@ -39,9 +40,26 @@ func part1(input string) int {
 
 func part2(input string) int {
 	sections := strings.Split(input, "\n\n")
-	seeds := calcSeedsFromRanges(parseInts(strings.Split(sections[0], ": ")[1]))
+	seedRanges := buildSeedRanges(parseInts(strings.Split(sections[0], ": ")[1]))
 
-	return minLocationForSeeds(sections[1:], seeds)
+	min := math.MaxInt
+	for i, sr := range seedRanges {
+		chunks := chunked(sr, 1_000_000)
+		count := len(chunks)
+		fmt.Printf("#%d - Chunked Ranges for (%d,%d): %+v\n", i+1, sr[0], sr[1], count)
+
+		for j, chunk := range chunks {
+			pct := int((float64(j+1) / float64(count)) * 100)
+			fmt.Printf("#%d\tchecking range: %+v [%d/%d] %d%%\n", i+1, chunk, j+1, count, pct)
+
+			if n := minLocationForSeeds(sections, genSeedsFromRange(chunk)); n < min {
+				min = n
+			}
+		}
+		fmt.Println()
+	}
+
+	return min
 }
 
 func minLocationForSeeds(sections []string, seeds []int) int {
@@ -71,15 +89,36 @@ func minLocationForSeeds(sections []string, seeds []int) int {
 	return slices.Min(values)
 }
 
-func calcSeedsFromRanges(ranges []int) []int {
+func buildSeedRanges(nums []int) [][]int {
+	ranges := [][]int{}
+
+	for i := 0; i < len(nums); i += 2 {
+		start, len := nums[i], nums[i+1]
+		ranges = append(ranges, []int{start, start + len - 1})
+	}
+
+	return ranges
+}
+
+func chunked(r []int, size int) [][]int {
+	from, to := r[0], r[1]
+
+	if to-from <= size {
+		return [][]int{r}
+	}
+
+	next := []int{from, from + size}
+	chunks := [][]int{next}
+
+	return append(chunks, chunked([]int{from + size + 1, to}, size)...)
+}
+
+func genSeedsFromRange(r []int) []int {
+	from, to := r[0], r[1]
 	seeds := []int{}
 
-	for i := 0; i < len(ranges); i += 2 {
-		start, len := ranges[i], ranges[i+1]
-
-		for j := start; j < start+len; j++ {
-			seeds = append(seeds, j)
-		}
+	for i := from; i <= to; i++ {
+		seeds = append(seeds, i)
 	}
 
 	return seeds
