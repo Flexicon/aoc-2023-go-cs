@@ -23,7 +23,8 @@ func main() {
 	util.Check(2, part2, 467835, TestInput, Input)
 }
 
-func part1(lines []string) int {
+func part1(input string) int {
+	lines := strings.Split(input, "\n")
 	sum := 0
 
 	for i, line := range lines {
@@ -54,7 +55,8 @@ func part1(lines []string) int {
 	return sum
 }
 
-func part2(lines []string) int {
+func part2(input string) int {
+	lines := strings.Split(input, "\n")
 	sum := 0
 
 	for i, line := range lines {

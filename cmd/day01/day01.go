@@ -25,11 +25,13 @@ func main() {
 	util.Check(2, part2, 281, TestInput2, Input)
 }
 
-func part1(lines []string) int {
+func part1(input string) int {
+	lines := strings.Split(input, "\n")
 	return calculateCalibration(lines, false)
 }
 
-func part2(lines []string) int {
+func part2(input string) int {
+	lines := strings.Split(input, "\n")
 	return calculateCalibration(lines, true)
 }
 

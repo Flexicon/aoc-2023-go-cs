@@ -22,7 +22,8 @@ func main() {
 	util.Check(2, part2, 2286, TestInput, Input)
 }
 
-func part1(lines []string) int {
+func part1(input string) int {
+	lines := strings.Split(input, "\n")
 	maxColors := map[string]int{
 		"red":   12,
 		"green": 13,
@@ -60,7 +61,8 @@ func part1(lines []string) int {
 	return sum
 }
 
-func part2(lines []string) int {
+func part2(input string) int {
+	lines := strings.Split(input, "\n")
 	sum := 0
 
 	for _, line := range lines {
